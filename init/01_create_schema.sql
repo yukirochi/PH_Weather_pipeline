@@ -1,7 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS raw;
-
 CREATE TABLE IF NOT EXISTS raw.weather_observations (
     id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    city_name           TEXT,
     latitude            NUMERIC(9,6) NOT NULL,
     longitude           NUMERIC(9,6) NOT NULL,
     observed_at         TIMESTAMPTZ NOT NULL,
