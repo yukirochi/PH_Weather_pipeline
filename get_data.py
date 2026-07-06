@@ -1,11 +1,12 @@
 import requests
-import psycopg2
-import json
-from datetime import datetime
+import psycopg2  # type: ignore[import]
+from psycopg2.extras import Json
+from datetime import datetime, timezone
 
-url = 'https://api.open-meteo.com/v1/forecast?latitude=14.759&longitude=121.2019&hourly=temperature_2m,rain,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FManila'
+url = 'https://api.open-meteo.com/v1/forecast?latitude=14.759&longitude=121.2019&current=temperature_2m,rain,wind_speed_10m&timezone=Asia%2FManila'
 
 response = requests.get(url)
+response.raise_for_status()   # fail loudly if the API call itself failed
 data = response.json()
 
 conn = psycopg2.connect(
@@ -16,13 +17,33 @@ conn = psycopg2.connect(
     dbname="weather_db"
 )
 
-cur = conn.cursor()
+try:
+    cur = conn.cursor()
 
-cur.execute(
-    "INSERT INTO raw.weather_api_response (fetched_at, raw_json) VALUES (%s, %s)",
-    (datetime.now(), json.dumps(data))
-)
+    current = data["current"]
 
-conn.commit()
-cur.close()
-conn.close
+    cur.execute(
+        """
+        INSERT INTO raw.weather_observations
+            (latitude, longitude, observed_at, temperature_c,
+             precipitation_mm, wind_speed_kmh, raw_payload, source_name)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (latitude, longitude, observed_at, source_name) DO NOTHING
+        """,
+        (
+            data["latitude"],
+            data["longitude"],
+            current["time"],              # e.g. "2026-07-06T14:00"
+            current.get("temperature_2m"),
+            current.get("rain"),
+            current.get("wind_speed_10m"),
+            Json(data),                    # full raw response, preserved
+            "open-meteo"
+        )
+    )
+
+    conn.commit()
+    cur.close()
+
+finally:
+    conn.close()
