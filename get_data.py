@@ -1,7 +1,9 @@
 import requests
 import psycopg2  # type: ignore[import]
 from psycopg2.extras import Json
-from datetime import datetime, time, timezone
+from datetime import datetime, timezone
+from datetime import time as dt_time  # if you need datetime.time elsewhere
+import time  # the actual time module, for time.sleep
 
 CITIES = [
     {"name": "Manila", "latitude": 14.5995, "longitude": 120.9842},
