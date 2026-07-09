@@ -1,0 +1,24 @@
+# models/staging/sources.yml
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: weather_observations
+        loaded_at_field: ingested_at
+        freshness:
+          warn_after: {count: 2, period: hour}
+          error_after: {count: 6, period: hour}
+
+# # models/staging/sources.yml (continued)
+#         columns:
+#           - name: observed_at
+#             tests:
+#               - not_null
+#           - name: latitude
+#             tests:
+#               - not_null
+#           - name: temperature_c
+#             tests:
+#               - dbt_utils.accepted_range:
+#                   min_value: 10
+#                   max_value: 45

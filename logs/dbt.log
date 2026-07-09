@@ -1,0 +1,159 @@
+[0m18:22:35.597412 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74961c4bae70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74961c3a3fe0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74961e91b290>]}
+
+
+============================== 18:22:35.604239 | 0c91ab29-0c8a-4c5c-bc7a-d3d058cd1544 ==============================
+[0m18:22:35.604239 [info ] [MainThread]: Running with dbt=1.12.0-rc1
+[0m18:22:35.605655 [debug] [MainThread]: running dbt with arguments {'log_path': 'logs', 'quiet': 'False', 'send_anonymous_usage_stats': 'True', 'version_check': 'True', 'cache_selected_only': 'False', 'no_print': 'None', 'target_path': 'None', 'use_colors': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'invocation_command': 'dbt init', 'static_parser': 'True', 'empty': 'None', 'profiles_dir': '/home/otto/.dbt', 'fail_fast': 'False', 'write_json': 'True', 'maximum_seed_size_mib': '1', 'printer_width': '80', 'debug': 'False', 'partial_parse': 'True', 'log_format': 'default', 'warn_error': 'None', 'log_cache_events': 'False', 'indirect_selection': 'eager', 'introspect': 'True', 'use_experimental_parser': 'False'}
+[0m18:22:46.533137 [debug] [MainThread]: Starter project path: /home/otto/Documents/projects/ph-weather_pulse/.venv/lib/python3.12/site-packages/dbt/include/starter_project
+[0m18:22:46.539099 [info ] [MainThread]: Setting up your profile.
+[0m18:23:05.123452 [info ] [MainThread]: Profile weather_dbt written to /home/otto/.dbt/profiles.yml using target's profile_template.yml and your supplied values.
+[0m18:23:05.126671 [info ] [MainThread]: Running dbt debug to validate the project...
+[0m18:23:05.128188 [info ] [MainThread]: dbt version: 1.12.0-rc1
+[0m18:23:05.129195 [info ] [MainThread]: python version: 3.12.3
+[0m18:23:05.130040 [info ] [MainThread]: python path: /home/otto/Documents/projects/ph-weather_pulse/.venv/bin/python3
+[0m18:23:05.130908 [info ] [MainThread]: os info: Linux-6.17.0-35-generic-x86_64-with-glibc2.39
+[0m18:23:05.193915 [info ] [MainThread]: Using profiles dir at /home/otto/.dbt
+[0m18:23:05.194997 [info ] [MainThread]: Using profiles.yml file at /home/otto/.dbt/profiles.yml
+[0m18:23:05.195878 [info ] [MainThread]: Using dbt_project.yml file at /home/otto/Documents/projects/ph-weather_pulse/weather_dbt/dbt_project.yml
+[0m18:23:05.197071 [info ] [MainThread]: adapter type: postgres
+[0m18:23:05.197863 [info ] [MainThread]: adapter version: 1.10.2
+[0m18:23:05.518212 [info ] [MainThread]: Configuration:
+[0m18:23:05.519167 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m18:23:05.519967 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m18:23:05.520745 [info ] [MainThread]: Required dependencies:
+[0m18:23:05.521575 [debug] [MainThread]: Executing "git --help"
+[0m18:23:05.525472 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]\n           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]\n           [--config-env=<name>=<envvar>] <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m18:23:05.527115 [debug] [MainThread]: STDERR: "b''"
+[0m18:23:05.528419 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m18:23:05.529874 [info ] [MainThread]: Connection:
+[0m18:23:05.531362 [info ] [MainThread]:   host: a
+[0m18:23:05.532696 [info ] [MainThread]:   port: 2
+[0m18:23:05.533984 [info ] [MainThread]:   user: d
+[0m18:23:05.535162 [info ] [MainThread]:   database: a
+[0m18:23:05.536455 [info ] [MainThread]:   schema: d
+[0m18:23:05.537766 [info ] [MainThread]:   connect_timeout: 10
+[0m18:23:05.539018 [info ] [MainThread]:   role: None
+[0m18:23:05.540281 [info ] [MainThread]:   search_path: None
+[0m18:23:05.541533 [info ] [MainThread]:   keepalives_idle: 0
+[0m18:23:05.542709 [info ] [MainThread]:   sslmode: None
+[0m18:23:05.544039 [info ] [MainThread]:   sslcert: None
+[0m18:23:05.545261 [info ] [MainThread]:   sslkey: None
+[0m18:23:05.546501 [info ] [MainThread]:   sslrootcert: None
+[0m18:23:05.547764 [info ] [MainThread]:   application_name: dbt
+[0m18:23:05.549125 [info ] [MainThread]:   retries: 1
+[0m18:23:05.550551 [info ] [MainThread]: Registered adapter: postgres=1.10.2
+[0m18:23:05.735059 [debug] [MainThread]: Acquiring new postgres connection 'debug'
+[0m18:23:05.780766 [debug] [MainThread]: Using postgres connection "debug"
+[0m18:23:05.781750 [debug] [MainThread]: On debug: select 1 as id
+[0m18:23:05.782543 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m18:23:05.784877 [debug] [MainThread]: Postgres adapter: Got a retryable error when attempting to open a postgres connection.
+1 attempts remaining. Retrying in 0 seconds.
+Error:
+could not translate host name "a" to address: Temporary failure in name resolution
+
+[0m18:23:05.786777 [debug] [MainThread]: Postgres adapter: Error running SQL: select 1 as id
+[0m18:23:05.787568 [debug] [MainThread]: Postgres adapter: Rolling back transaction.
+[0m18:23:05.788326 [debug] [MainThread]: On debug: No close available on handle
+[0m18:23:05.789064 [info ] [MainThread]:   Connection test: [[31mERROR[0m]
+
+[0m18:23:05.789847 [info ] [MainThread]: [31m1 check failed:[0m
+[0m18:23:05.790582 [info ] [MainThread]: dbt was unable to connect to the specified database.
+The database returned the following error:
+
+  >Database Error
+  could not translate host name "a" to address: Temporary failure in name resolution
+  
+
+Check your database credentials and try again. For more information, visit:
+https://docs.getdbt.com/docs/configure-your-profile
+
+
+[0m18:23:05.791406 [info ] [MainThread]: Your new dbt project "weather_dbt" was created!
+Initialized new project in /home/otto/Documents/projects/ph-weather_pulse/weather_dbt/weather_dbt
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m18:23:05.792251 [info ] [MainThread]: [31mYour profile may need adjustments. You can find the logs of `dbt debug` above[0m
+[0m18:23:05.794388 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 30.366913, "process_in_blocks": "3664", "process_kernel_time": 0.384592, "process_mem_max_rss": "121436", "process_out_blocks": "96", "process_user_time": 3.779991}
+[0m18:23:05.795712 [debug] [MainThread]: Command `dbt init` succeeded at 18:23:05.795426 after 30.37 seconds
+[0m18:23:05.797012 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m18:23:05.798354 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74961b8206e0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74961adc50d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74961b807230>]}
+[0m18:23:05.799936 [debug] [MainThread]: Flushing usage events
+[0m18:23:06.884072 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m18:32:07.806970 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c461a23c560>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c461b314fb0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c461b219f70>]}
+
+
+============================== 18:32:07.815236 | 4649d832-1a90-47c9-976a-3ddada1b243c ==============================
+[0m18:32:07.815236 [info ] [MainThread]: Running with dbt=1.12.0-rc1
+[0m18:32:07.816886 [debug] [MainThread]: running dbt with arguments {'introspect': 'True', 'empty': 'None', 'no_print': 'None', 'indirect_selection': 'eager', 'log_path': 'logs', 'use_colors': 'True', 'static_parser': 'True', 'profiles_dir': '/home/otto/.dbt', 'fail_fast': 'False', 'cache_selected_only': 'False', 'quiet': 'False', 'printer_width': '80', 'partial_parse': 'True', 'maximum_seed_size_mib': '1', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True', 'use_experimental_parser': 'False', 'version_check': 'True', 'warn_error': 'None', 'invocation_command': 'dbt debug', 'write_json': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'log_cache_events': 'False', 'debug': 'False'}
+[0m18:32:07.845235 [info ] [MainThread]: dbt version: 1.12.0-rc1
+[0m18:32:07.846706 [info ] [MainThread]: python version: 3.12.3
+[0m18:32:07.847952 [info ] [MainThread]: python path: /home/otto/Documents/projects/ph-weather_pulse/.venv/bin/python3
+[0m18:32:07.848987 [info ] [MainThread]: os info: Linux-6.17.0-35-generic-x86_64-with-glibc2.39
+[0m18:32:07.860932 [info ] [MainThread]: Error importing adapter: No module named 'dbt.adapters.snowflake'
+[0m18:32:07.869397 [info ] [MainThread]: Error importing adapter: No module named 'dbt.adapters.snowflake'
+[0m18:32:07.878208 [info ] [MainThread]: Error importing adapter: No module named 'dbt.adapters.snowflake'
+[0m18:32:07.882952 [info ] [MainThread]: Error importing adapter: No module named 'dbt.adapters.snowflake'
+[0m18:32:07.887725 [info ] [MainThread]: Error importing adapter: No module named 'dbt.adapters.snowflake'
+[0m18:32:07.895627 [info ] [MainThread]: Error importing adapter: No module named 'dbt.adapters.snowflake'
+[0m18:32:07.898016 [info ] [MainThread]: Using profiles dir at /home/otto/.dbt
+[0m18:32:07.899611 [info ] [MainThread]: Using profiles.yml file at /home/otto/.dbt/profiles.yml
+[0m18:32:07.901055 [info ] [MainThread]: Using dbt_project.yml file at /home/otto/Documents/projects/ph-weather_pulse/dbt_project.yml
+[0m18:32:07.902500 [info ] [MainThread]: Configuration:
+[0m18:32:07.903870 [info ] [MainThread]:   profiles.yml file [[31mERROR invalid[0m]
+[0m18:32:07.905326 [info ] [MainThread]:   dbt_project.yml file [[31mERROR not found[0m]
+[0m18:32:07.906765 [info ] [MainThread]: Required dependencies:
+[0m18:32:07.908379 [debug] [MainThread]: Executing "git --help"
+[0m18:32:07.913947 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]\n           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]\n           [--config-env=<name>=<envvar>] <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m18:32:07.915361 [debug] [MainThread]: STDERR: "b''"
+[0m18:32:07.916327 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m18:32:07.917446 [info ] [MainThread]: Connection test skipped since no profile was found
+[0m18:32:07.918580 [info ] [MainThread]: [31m2 checks failed:[0m
+[0m18:32:07.919634 [info ] [MainThread]: Could not load dbt_project.yml
+Profile loading failed for the following reason:
+Runtime Error
+  Credentials in profile "dbt_fertile", target "dev" invalid: Runtime Error
+    Could not find adapter type snowflake!
+
+Runtime Error
+  Credentials in profile "dbt_heart", target "dev" invalid: Runtime Error
+    Could not find adapter type snowflake!
+
+Runtime Error
+  Credentials in profile "dbt_housing", target "dev" invalid: Runtime Error
+    Could not find adapter type snowflake!
+
+Runtime Error
+  Credentials in profile "dbt_sock", target "dev" invalid: Runtime Error
+    Could not find adapter type snowflake!
+
+Runtime Error
+  Credentials in profile "dbt_soil_moisture", target "dev" invalid: Runtime Error
+    Could not find adapter type snowflake!
+
+Runtime Error
+  Credentials in profile "insurance_dbt", target "dev" invalid: Runtime Error
+    Could not find adapter type snowflake!
+
+
+[0m18:32:07.920821 [info ] [MainThread]: Project loading failed for the following reason:
+ project path </home/otto/Documents/projects/ph-weather_pulse/dbt_project.yml> not found
+
+[0m18:32:07.923304 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 0.31173036, "process_in_blocks": "44944", "process_kernel_time": 0.370566, "process_mem_max_rss": "108644", "process_out_blocks": "16", "process_user_time": 3.856493}
+[0m18:32:07.924625 [debug] [MainThread]: Command `dbt debug` failed at 18:32:07.924384 after 0.31 seconds
+[0m18:32:07.925798 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c461991ac00>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c4618f1f200>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c461bd8b6b0>]}
+[0m18:32:07.926994 [debug] [MainThread]: Flushing usage events
+[0m18:32:09.129995 [debug] [MainThread]: An error was encountered while trying to flush usage events

@@ -1,0 +1,12 @@
+weather_dbt:
+  outputs:
+    dev:
+      dbname: weather_db
+      host: localhost
+      pass: weather_pass
+      port: 5433
+      schema: raw
+      threads: 1
+      type: postgres
+      user: weather_user
+  target: dev
