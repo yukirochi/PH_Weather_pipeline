@@ -158,7 +158,7 @@ Docker itself does not need to be reinstalled. It is a one-time, system-wide set
 ## 4. Docker Commands Reference
 
 ```bash
-# Start containers in the background
+# Start containers in the background / If you added new services
 docker compose up -d
 
 # Stop and remove containers (data in named volumes is preserved)

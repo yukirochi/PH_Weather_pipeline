@@ -18,6 +18,44 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  
+  postgres_airflow:
+    image: postgres:15
+    container_name: airflow_metadata
+    restart: always
+    environment:
+      POSTGRES_USER: airflow_user
+      POSTGRES_PASSWORD: airflow_pass
+      POSTGRES_DB: airflow_db
+    volumes:
+      - airflow_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow_user -d airflow_db"]   # <-- add -d airflow_db
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+  airflow:
+    image: apache/airflow:2.10.4
+    container_name: airflow
+    restart: always
+    user: "${AIRFLOW_UID}:0"   
+    depends_on:
+      postgres_airflow:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow_user:airflow_pass@postgres_airflow/airflow_db
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./scripts:/opt/airflow/scripts
+      - ./dbt:/opt/airflow/dbt
+    command: standalone
 
 volumes:
   weather_postgre_data:
+  airflow_postgres_data:
