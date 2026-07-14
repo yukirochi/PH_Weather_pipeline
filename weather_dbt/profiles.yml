@@ -2,9 +2,9 @@ weather_dbt:
   outputs:
     dev:
       dbname: weather_db
-      host: localhost
+      host: postgres_weather # from localhost to postgres_weather since the script is running inside the Docker container
       pass: weather_pass
-      port: 5433
+      port: 5432 # from 5433 to 5432 since the script is running inside the Docker container
       schema: raw
       threads: 1
       type: postgres

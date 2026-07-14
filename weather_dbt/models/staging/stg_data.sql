@@ -1,11 +1,12 @@
 SELECT
+    id,
+    latitude,
+    longitude,
     city_name,
-    COUNT(*) AS row_count,
-    MIN(observed_at) AS earliest,
-    MAX(observed_at) AS latest,
-    MIN(temperature_c) AS min_temp,
-    MAX(temperature_c) AS max_temp
+    temperature_c,
+    precipitation_mm,
+    wind_speed_kmh,
+    EXTRACT(HOUR FROM TIMESTAMP observed_at) AS observed_hour,
+    DATE(observed_at) AS observed_date
 FROM raw.weather_observations
 WHERE city_name IS NOT NULL
-GROUP BY city_name
-ORDER BY city_name
