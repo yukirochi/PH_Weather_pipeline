@@ -24,8 +24,8 @@ SOURCE_NAME = "open-meteo"
 
 
 conn = psycopg2.connect(
-    host="localhost",      # or "postgres_weather" if this script itself runs inside Docker
-    port=5433,
+    host="postgres_weather",      # or "postgres_weather" if this script itself runs inside Docker
+    port=5432,
     user="weather_user",
     password="weather_pass",
     dbname="weather_db"
