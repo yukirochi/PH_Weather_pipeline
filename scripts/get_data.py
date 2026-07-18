@@ -4,7 +4,7 @@ from psycopg2.extras import Json
 from datetime import datetime, timezone
 from datetime import time as dt_time  # if you need datetime.time elsewhere
 import time  # the actual time module, for time.sleep
-
+import os
 CITIES = [
     {"name": "Manila", "latitude": 14.5995, "longitude": 120.9842},
     {"name": "Cebu",   "latitude": 10.3157, "longitude": 123.8854},

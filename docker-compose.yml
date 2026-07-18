@@ -1,66 +1,87 @@
-services:
-  
-  postgres_weather:
-    image: postgres:15
-    container_name: weather_data
-    restart: always
-    environment:
-       POSTGRES_USER: weather_user
-       POSTGRES_PASSWORD: weather_pass
-       POSTGRES_DB: weather_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - weather_postgre_data:/var/lib/postgresql/data
-      - ./init:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U weather_user -d weather_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-  
-  postgres_airflow:
-    image: postgres:15
-    container_name: airflow_metadata
-    restart: always
-    environment:
-      POSTGRES_USER: airflow_user
-      POSTGRES_PASSWORD: airflow_pass
-      POSTGRES_DB: airflow_db
-    volumes:
-      - airflow_postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U airflow_user -d airflow_db"]   # <-- add -d airflow_db
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      
-  airflow:
-    build: .              
-    container_name: airflow
-    stop_grace_period: 30s
-    restart: always
-    user: "${AIRFLOW_UID}:0"   
-    depends_on:
-      postgres_airflow:
-        condition: service_healthy
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow_user:airflow_pass@postgres_airflow/airflow_db
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      DBT_PROFILES_DIR: /opt/airflow/weather_dbt
-      _AIRFLOW_WWW_USER_USERNAME: admin
-      _AIRFLOW_WWW_USER_PASSWORD: 1234
+  services:
     
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./dags:/opt/airflow/dags
-      - ./logs:/opt/airflow/logs
-      - ./scripts:/opt/airflow/scripts
-      - ./weather_dbt:/opt/airflow/weather_dbt
-    command: standalone
-
-volumes:
-  weather_postgre_data:
-  airflow_postgres_data:
+    postgres_weather:
+      image: postgres:15
+      container_name: weather_data
+      restart: always
+      environment:
+        POSTGRES_USER: weather_user
+        POSTGRES_PASSWORD: weather_pass
+        POSTGRES_DB: weather_db
+      ports:
+        - "5433:5432"
+      volumes:
+        - weather_postgre_data:/var/lib/postgresql/data
+        - ./init:/docker-entrypoint-initdb.d
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U weather_user -d weather_db"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+    
+    postgres_airflow:
+      image: postgres:15
+      container_name: airflow_metadata
+      restart: always
+      environment:
+        POSTGRES_USER: airflow_user
+        POSTGRES_PASSWORD: airflow_pass
+        POSTGRES_DB: airflow_db
+      volumes:
+        - airflow_postgres_data:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U airflow_user -d airflow_db"]   # <-- add -d airflow_db
+        interval: 5s
+        timeout: 5s
+        retries: 5
+        
+    airflow:
+      build: .              
+      container_name: airflow
+      stop_grace_period: 30s
+      restart: always
+      user: "${AIRFLOW_UID}:0"   
+      depends_on:
+        postgres_airflow:
+          condition: service_healthy
+      environment:
+        AIRFLOW__CORE__EXECUTOR: LocalExecutor
+        AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow_user:airflow_pass@postgres_airflow/airflow_db
+        AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+        DBT_PROFILES_DIR: /opt/airflow/weather_dbt
+        _AIRFLOW_WWW_USER_USERNAME: admin
+        _AIRFLOW_WWW_USER_PASSWORD: 1234
+      
+      ports:
+        - "8080:8080"
+      volumes:
+        - ./dags:/opt/airflow/dags
+        - ./logs:/opt/airflow/logs
+        - ./scripts:/opt/airflow/scripts
+        - ./weather_dbt:/opt/airflow/weather_dbt
+      command: standalone
+    
+    metabase:
+      image: metabase/metabase:latest
+      container_name: metabase_app
+      restart: always
+      ports:
+        - "3000:3000"
+      depends_on:
+        postgres_weather:
+          condition: service_healthy # Waits for your pg_isready healthcheck to pass
+      
+      # ⚠️ ONLY ADD THE ENVIRONMENT SECTION BELOW IF YOU WANT METABASE 
+      # TO STORE ITS INTERNAL DATA (users, dashboards) IN THIS POSTGRES INSTANCE.
+      # If you just want to visualize your weather data, delete this environment block.
+      environment:
+        MB_DB_TYPE: postgres
+        MB_DB_DBNAME: weather_db
+        MB_DB_PORT: 5432
+        MB_DB_USER: weather_user
+        MB_DB_PASS: weather_pass
+        MB_DB_HOST: postgres_weather
+    
+  volumes:
+    weather_postgre_data:
+    airflow_postgres_data:
