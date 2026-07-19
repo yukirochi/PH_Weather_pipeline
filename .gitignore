@@ -2,3 +2,4 @@
 __pycache__
 logs
 weather_dbt/logs
+.pytest_cache
