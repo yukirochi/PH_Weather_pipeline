@@ -6,7 +6,7 @@ A data engineering pipeline that collects real-time weather observations from fi
 
 ## Status
 
-**In Development.** The local pipeline (ingestion, transformation, visualization) is fully operational. Snowflake integration is planned for a future phase to enable cloud-scale storage and analytics.
+**In Development — Snowflake Migration In Progress.** The local pipeline (ingestion, transformation, visualization) is fully operational. Snowflake integration is actively underway: transfer scripts have been written and tested against a live Snowflake account.
 
 ---
 
@@ -34,7 +34,7 @@ PH Weather Pulse ingests hourly weather readings — temperature, precipitation,
 | Transformation     | dbt Core (`dbt-postgres`)               |
 | Visualization      | Metabase                                |
 | Containerization   | Docker + Docker Compose                 |
-| Future Warehouse   | Snowflake *(planned)*                   |
+| Cloud Warehouse    | Snowflake *(migration in progress)*     |
 
 ---
 
@@ -86,7 +86,9 @@ ph-weather_pulse/
 ├── dags/
 │   └── weather_scrape_dag.py       # Airflow DAG definition
 ├── scripts/
-│   └── get_data.py                 # API ingestion and DB insert logic
+│   ├── get_data.py                 # API ingestion and DB insert logic
+│   ├── transfer_to_snowflake.py    # Bulk transfer: staging view → Snowflake
+│   └── single_transfer.py         # Upsert transfer: last 5 rows → Snowflake (MERGE)
 ├── weather_dbt/
 │   ├── models/
 │   │   └── staging/
@@ -245,6 +247,43 @@ dbt test
 
 ---
 
+## Snowflake Transfer
+
+Two scripts handle the transfer of transformed data from the local PostgreSQL staging layer to Snowflake:
+
+### `transfer_to_snowflake.py` — Bulk Transfer
+
+Reads the full `staging.stg_data` view from PostgreSQL and writes it directly to the `STG_DATA` table in Snowflake using `write_pandas`. Intended for an initial or full-refresh load.
+
+```bash
+cd scripts
+python transfer_to_snowflake.py
+```
+
+### `single_transfer.py` — Upsert Transfer
+
+Fetches only the latest five records and performs a `MERGE` into Snowflake's `STG_DATA` table, updating existing rows on `(OBSERVED_HOUR, CITY_NAME)` and inserting new ones. This is the incremental pattern that will be used for ongoing sync.
+
+```bash
+cd scripts
+python single_transfer.py
+```
+
+Both scripts read Snowflake credentials from `scripts/.env`:
+
+| Variable      | Description                       |
+|---------------|-----------------------------------|
+| `SNOW_USER`   | Snowflake username                |
+| `SNOW_PASS`   | Snowflake password                |
+| `SNOW_ACC`    | Account identifier (e.g. `abc123.ap-southeast-7.aws`) |
+| `SNOW_WH`     | Virtual warehouse name            |
+| `SNOW_DB`     | Target database                   |
+| `SNOW_SCHEMA` | Target schema (e.g. `staging`)    |
+
+> The `scripts/.env` file is excluded from version control via `.gitignore`. Never commit credentials.
+
+---
+
 ## Findings
 
 The dashboard was built in Metabase using data collected from the staging layer.
@@ -284,7 +323,8 @@ Iloilo leads in average wind speed. Manila records the highest single maximum wi
 - [x] Airflow scheduling (hourly)
 - [x] dbt staging transformation layer
 - [x] Metabase dashboard with initial findings
-- [ ] Snowflake integration as the cloud data warehouse
+- [/] Snowflake integration — transfer scripts written and tested
+- [ ] Automate Snowflake sync via Airflow DAG
 - [ ] dbt models targeting Snowflake schemas
 - [ ] Historical backfill of weather data
 - [ ] Expanded city coverage
