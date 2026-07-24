@@ -58,7 +58,7 @@ if success:
         MERGE INTO
             STG_DATA AS target
             USING STAGING_DATA AS source
-        ON target.OBSERVED_HOUR = source.OBSERVED_HOUR AND target.CITY_NAME = source.CITY_NAME
+        ON target.OBSERVED_HOUR = source.OBSERVED_HOUR AND target.CITY_NAME = source.CITY_NAME AND source.OBSERVED_DATE = target.OBSERVED_DATE
         
         WHEN MATCHED THEN 
             UPDATE SET 

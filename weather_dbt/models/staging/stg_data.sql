@@ -24,4 +24,4 @@ SELECT
     observed_hour,
     MAX(observed_date) AS observed_date
 FROM staged 
-GROUP BY city_name, observed_hour
+GROUP BY city_name, observed_hour, observed_date
