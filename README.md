@@ -32,7 +32,7 @@ PH Weather Pulse ingests hourly weather readings — temperature, precipitation,
 | Data Ingestion     | Python 3 (`requests`, `psycopg2`)       |
 | Data Storage       | PostgreSQL 15 (Dockerized)              |
 | Transformation     | dbt Core (`dbt-postgres`)               |
-| Visualization      | Metabase                                |
+| Visualization      | Metabase v0.51.4                        |
 | Containerization   | Docker + Docker Compose                 |
 | Cloud Warehouse    | Snowflake *(migration in progress)*     |
 
@@ -102,6 +102,7 @@ ph-weather_pulse/
 ├── notes/
 │   └── docker-postgres-setup-notes.md
 ├── schema_baseline_20260709.sql    # Point-in-time DB schema snapshot
+├── .env                            # Local dev environment variables (see note below)
 ├── Dockerfile                      # Custom Airflow image with dbt installed
 ├── docker-compose.yml              # All services defined here
 └── test_api.py                     # API response validation tests
@@ -137,14 +138,43 @@ The upsert guarantees that re-running the pipeline for the same time slot update
 
 ## Services
 
-Four Docker containers are managed through a single `docker-compose.yml`:
+Four Docker containers are managed through a single `docker-compose.yml`. All credentials and configuration are read from the root `.env` file at startup.
 
-| Container         | Image                      | Purpose                                         | Port        |
-|-------------------|----------------------------|-------------------------------------------------|-------------|
-| `weather_data`    | `postgres:15`              | Stores all weather observations                 | `5433:5432` |
-| `airflow_metadata`| `postgres:15`              | Stores Airflow's internal run history and state | Internal    |
-| `airflow`         | Custom (Airflow + dbt)     | Runs and schedules the pipeline                 | `8080:8080` |
-| `metabase_app`    | `metabase/metabase:latest` | Dashboard and visualization layer               | `3000:3000` |
+| Container          | Image                           | Purpose                                            | Port        | Resource Limit  |
+|--------------------|---------------------------------|----------------------------------------------------|-------------|-----------------|
+| `weather_data`     | `postgres:15`                   | Stores all weather observations                    | `5433:5432` | 512 MB / 1 CPU  |
+| `airflow_metadata` | `postgres:15`                   | Stores Airflow's internal run history and state    | Internal    | 512 MB / 1 CPU  |
+| `airflow`          | Custom (Airflow + dbt)          | Runs and schedules the pipeline                    | `8080:8080` | 2 GB / 2 CPUs   |
+| `metabase_app`     | `metabase/metabase:v0.51.4`     | Dashboard and visualization layer                  | `3000:3000` | 1 GB / 1 CPU    |
+
+All services are connected on a shared Docker bridge network (`weather_net`) and include healthchecks. The `airflow` service waits for both Postgres containers to pass their healthchecks before starting. Metabase waits for `postgres_weather` to be healthy and uses it as its own application database backend (`MB_DB_*` variables), ensuring its metadata survives container restarts via a named volume.
+
+---
+
+## Environment Variables
+
+> **Note on `.env` visibility:** The root `.env` file is intentionally committed to version control. It contains only the default credentials used for this local development stack — no production secrets or sensitive data. This is a deliberate choice to make the project immediately runnable after cloning without any manual configuration.
+>
+> The only file excluded from version control is `scripts/.env`, which holds actual Snowflake credentials and is listed in `.gitignore`.
+
+The root `.env` file is read automatically by Docker Compose and configures all four services:
+
+| Variable                   | Description                                    |
+|----------------------------|------------------------------------------------|
+| `AIRFLOW_UID`              | Host user UID for Airflow volume permissions   |
+| `POSTGRES_USER`            | Weather DB username                            |
+| `POSTGRES_PASSWORD`        | Weather DB password                            |
+| `POSTGRES_DB`              | Weather DB name                                |
+| `_AIRFLOW_WWW_USER_USERNAME` | Airflow web UI username                      |
+| `_AIRFLOW_WWW_USER_PASSWORD` | Airflow web UI password                      |
+| `AIRFLOW_POSTGRES_USER`    | Airflow metadata DB username                   |
+| `AIRFLOW_POSTGRES_PASSWORD`| Airflow metadata DB password                   |
+| `AIRFLOW_POSTGRES_DB`      | Airflow metadata DB name                       |
+| `MB_DB_DBNAME`             | Metabase backend DB name                       |
+| `MB_DB_PORT`               | Metabase backend DB port                       |
+| `MB_DB_USER`               | Metabase backend DB username                   |
+| `MB_DB_PASS`               | Metabase backend DB password                   |
+| `MB_DB_HOST`               | Metabase backend DB host (container name)      |
 
 ---
 
@@ -163,15 +193,9 @@ git clone <your-repo-url>
 cd ph-weather_pulse
 ```
 
-### Step 2 — Set the Airflow UID
+The `.env` file is included in the repository with working defaults for the local dev stack. No manual configuration is required to get started.
 
-Airflow requires knowing the host user's UID to avoid permission issues with mounted volumes.
-
-```bash
-echo "AIRFLOW_UID=$(id -u)" > .env
-```
-
-### Step 3 — Start All Services
+### Step 2 — Start All Services
 
 ```bash
 docker compose up -d
@@ -179,7 +203,7 @@ docker compose up -d
 
 Docker will pull the required images, build the custom Airflow image, and start all four containers. Allow roughly one to two minutes for Airflow and Metabase to fully initialize.
 
-### Step 4 — Verify Containers Are Running
+### Step 3 — Verify Containers Are Running
 
 ```bash
 docker compose ps
@@ -187,29 +211,29 @@ docker compose ps
 
 All four services should show a status of `running` or `healthy`.
 
-### Step 5 — Access the Services
+### Step 4 — Access the Services
 
 | Service  | URL                       | Default Credentials          |
 |----------|---------------------------|------------------------------|
 | Airflow  | http://localhost:8080     | `admin` / `1234`             |
 | Metabase | http://localhost:3000     | Set up on first visit        |
 
-### Step 6 — Enable the DAG
+### Step 5 — Enable the DAG
 
 Open the Airflow UI, find the `weather_scrape_and_load` DAG, and toggle it on. It will run immediately and then repeat every hour.
 
-### Step 7 — Connect Metabase to PostgreSQL
+### Step 6 — Connect Metabase to PostgreSQL
 
 In Metabase, add a new database connection with these settings:
 
-| Field    | Value            |
-|----------|------------------|
-| Type     | PostgreSQL       |
-| Host     | `postgres_weather`|
-| Port     | `5432`           |
-| Database | `weather_db`     |
-| Username | `weather_user`   |
-| Password | `weather_pass`   |
+| Field    | Value              |
+|----------|--------------------|
+| Type     | PostgreSQL         |
+| Host     | `postgres_weather` |
+| Port     | `5432`             |
+| Database | `weather_db`       |
+| Username | `weather_user`     |
+| Password | `weather_pass`     |
 
 > Note: Use the container name `postgres_weather` as the host (not `localhost`), since Metabase communicates with it over Docker's internal network.
 
@@ -280,7 +304,7 @@ Both scripts read Snowflake credentials from `scripts/.env`:
 | `SNOW_DB`     | Target database                   |
 | `SNOW_SCHEMA` | Target schema (e.g. `staging`)    |
 
-> The `scripts/.env` file is excluded from version control via `.gitignore`. Never commit credentials.
+> `scripts/.env` is excluded from version control via `.gitignore`. This is where actual Snowflake credentials live and should never be committed.
 
 ---
 
@@ -323,6 +347,9 @@ Iloilo leads in average wind speed. Manila records the highest single maximum wi
 - [x] Airflow scheduling (hourly)
 - [x] dbt staging transformation layer
 - [x] Metabase dashboard with initial findings
+- [x] Externalize all service credentials to `.env`
+- [x] Resource limits and healthchecks on all containers
+- [x] Metabase pinned to stable version with persistent backend DB
 - [/] Snowflake integration — transfer scripts written and tested
 - [ ] Automate Snowflake sync via Airflow DAG
 - [ ] dbt models targeting Snowflake schemas

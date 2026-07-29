@@ -1,56 +1,72 @@
+  networks:
+    weather_net:
+      name: weather_net
   services:
-    
     postgres_weather:
+      mem_limit: 512m
+      cpus: 1.0
+      networks: 
+        - weather_net
       image: postgres:15
       container_name: weather_data
-      restart: always
+      restart: unless-stopped
       environment:
-        POSTGRES_USER: weather_user
-        POSTGRES_PASSWORD: weather_pass
-        POSTGRES_DB: weather_db
+        POSTGRES_USER: "${POSTGRES_USER}"
+        POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+        POSTGRES_DB: "${POSTGRES_DB}"
       ports:
         - "5433:5432"
       volumes:
-        - weather_postgre_data:/var/lib/postgresql/data
+        - weather_postgre_data:/var/lib/postgresql/data 
         - ./init:/docker-entrypoint-initdb.d
       healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U weather_user -d weather_db"]
+        test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
         interval: 5s
         timeout: 5s
         retries: 5
     
     postgres_airflow:
+      mem_limit: 512m
+      cpus: 1.0
+      networks: 
+        - weather_net
       image: postgres:15
       container_name: airflow_metadata
-      restart: always
+      restart: unless-stopped
       environment:
-        POSTGRES_USER: airflow_user
-        POSTGRES_PASSWORD: airflow_pass
-        POSTGRES_DB: airflow_db
+        POSTGRES_USER: "${AIRFLOW_POSTGRES_USER}"
+        POSTGRES_PASSWORD: "${AIRFLOW_POSTGRES_PASSWORD}"
+        POSTGRES_DB: "${AIRFLOW_POSTGRES_DB}"
       volumes:
         - airflow_postgres_data:/var/lib/postgresql/data
       healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U airflow_user -d airflow_db"]   # <-- add -d airflow_db
+        test: ["CMD-SHELL", "pg_isready -U ${AIRFLOW_POSTGRES_USER} -d ${AIRFLOW_POSTGRES_DB}"]   # <-- add -d airflow_db
         interval: 5s
         timeout: 5s
         retries: 5
         
     airflow:
+      mem_limit: 2g
+      cpus: 2.0
+      networks: 
+        - weather_net
       build: .              
       container_name: airflow
       stop_grace_period: 30s
-      restart: always
+      restart: unless-stopped
       user: "${AIRFLOW_UID}:0"   
       depends_on:
         postgres_airflow:
           condition: service_healthy
+        postgres_weather:
+          condition: service_healthy
       environment:
         AIRFLOW__CORE__EXECUTOR: LocalExecutor
-        AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow_user:airflow_pass@postgres_airflow/airflow_db
+        AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres_airflow/${AIRFLOW_POSTGRES_DB}
         AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
         DBT_PROFILES_DIR: /opt/airflow/weather_dbt
-        _AIRFLOW_WWW_USER_USERNAME: admin
-        _AIRFLOW_WWW_USER_PASSWORD: 1234
+        _AIRFLOW_WWW_USER_USERNAME: "${_AIRFLOW_WWW_USER_USERNAME}"
+        _AIRFLOW_WWW_USER_PASSWORD: "${_AIRFLOW_WWW_USER_PASSWORD}"
       
       ports:
         - "8080:8080"
@@ -60,27 +76,39 @@
         - ./scripts:/opt/airflow/scripts
         - ./weather_dbt:/opt/airflow/weather_dbt
       command: standalone
+      healthcheck:
+        test: ["CMD-SHELL", "curl --fail http://localhost:8080/health || exit 1"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 60s
     
     metabase:
-      image: metabase/metabase:latest
+      mem_limit: 1g
+      cpus: 1.0
+      networks: 
+        - weather_net
+      image: metabase/metabase:v0.51.4
       container_name: metabase_app
-      restart: always
+      restart: unless-stopped
       ports:
         - "3000:3000"
       depends_on:
         postgres_weather:
           condition: service_healthy # Waits for your pg_isready healthcheck to pass
-      
-      # ⚠️ ONLY ADD THE ENVIRONMENT SECTION BELOW IF YOU WANT METABASE 
-      # TO STORE ITS INTERNAL DATA (users, dashboards) IN THIS POSTGRES INSTANCE.
-      # If you just want to visualize your weather data, delete this environment block.
       environment:
         MB_DB_TYPE: postgres
-        MB_DB_DBNAME: weather_db
-        MB_DB_PORT: 5432
-        MB_DB_USER: weather_user
-        MB_DB_PASS: weather_pass
-        MB_DB_HOST: postgres_weather
+        MB_DB_DBNAME: "${MB_DB_DBNAME}"
+        MB_DB_PORT: "${MB_DB_PORT}"
+        MB_DB_USER: "${MB_DB_USER}"
+        MB_DB_PASS: "${MB_DB_PASS}"
+        MB_DB_HOST: "${MB_DB_HOST}"
+      healthcheck:
+        test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/health || exit 1"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 60s
     
   volumes:
     weather_postgre_data:
