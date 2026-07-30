@@ -22,7 +22,7 @@ with psycopg2.connect(
     password="weather_pass",
     dbname="weather_db"
 ) as conn:
-    query = "SELECT * FROM staging.stg_data ORDER BY id DESC LIMIT 5"
+    query = "SELECT * FROM staging.stg_data ORDER BY id DESC LIMIT 120"
     df = pd.read_sql_query(query, conn)
 
 
