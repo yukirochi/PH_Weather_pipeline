@@ -27,10 +27,5 @@ with DAG(
         task_id="dbt_run",
         bash_command="cd /opt/airflow/weather_dbt && dbt run",
     )
-    
-    transer_to_snowflake = BashOperator(
-        task_id="transer_to_snowflake",
-        bash_command="python /opt/airflow/scripts/single_transfer.py"
-    )
 
-    scrape_and_load >> dbt_run >> transer_to_snowflake
+    scrape_and_load >> dbt_run
